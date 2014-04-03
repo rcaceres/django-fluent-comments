@@ -6,11 +6,62 @@ from django.template import RequestContext
 from django.contrib import comments
 from django.contrib.comments import signals
 from django.contrib.comments.views.comments import CommentPostBadRequest
+from django.contrib.comments.views.moderation import perform_delete
+
 from django.utils.html import escape
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_POST
 from fluent_comments import appsettings
 import json
+
+from django.contrib.auth.decorators import login_required, permission_required
+from django.shortcuts import get_object_or_404, render_to_response
+from django.views.decorators.csrf import csrf_protect
+
+import django.contrib.comments
+from django.contrib.comments import signals
+from django.contrib.comments.views.utils import next_redirect, confirmation_view
+from django.conf import settings
+
+@csrf_protect
+def post_delete(request, comment_id, next=None):
+    """
+    Deletes a comment. Confirmation on GET, action on POST. Requires the "can
+    moderate comments" permission.
+
+    Templates: :template:`comments/delete.html`,
+    Context:
+        comment
+            the flagged `comments.comment` object
+    """
+    if not request.is_ajax():
+        return HttpResponseBadRequest("Expecting Ajax call")
+    
+
+    # authenticate
+    comment = get_object_or_404(django.contrib.comments.get_model(), pk=comment_id, site__pk=settings.SITE_ID)
+
+    if(comment.user.pk != request.user.pk):
+        return HttpResponseBadRequest("Not authenticated")
+        
+
+    # Delete on POST
+    if request.method == 'POST':
+        # Flag the comment as deleted instead of actually deleting it.
+        perform_delete(request, comment)
+
+    json_errors = []
+        
+    json_return = {
+        'success': True,
+        'errors': json_errors,
+        'comment_id': comment.pk,
+    }
+
+
+    json_response = json.dumps(json_return)
+    return HttpResponse(json_response, mimetype="application/json")
+
 
 
 @csrf_protect

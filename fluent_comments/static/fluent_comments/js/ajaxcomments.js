@@ -111,18 +111,20 @@
     }
 
 
-    function onCommentPosted( comment_id, is_moderated, $comment )
+    function onCommentPosted( data, is_moderated, $comment )
     {
+        var object_id = data['object_id'];
+        var the_form = $('#comment-form-' + object_id);
+
         var $message_span;
         if( is_moderated )
-            $message_span = $("#comment-moderated-message").fadeIn(200);
+            $message_span = $("#comment-moderated-message", the_form).fadeIn(200);
         else
-            $message_span = $("#comment-added-message").fadeIn(200);
+            $message_span = $("#comment-added-message", the_form).fadeIn(200);
 
         setTimeout(function(){ scrollToComment(comment_id, 1000); }, 1000);
         setTimeout(function(){ $message_span.fadeOut(500) }, 4000);
     }
-
 
     function showThreadedReplyForm(event) {
         event.preventDefault();
@@ -200,7 +202,7 @@
                         $added = commentSuccess(data);
 
                     if( onsuccess )
-                        args.onsuccess(data.comment_id, data.is_moderated, $added);
+                        args.onsuccess(data, data.is_moderated, $added);
                 }
                 else {
                     commentFailure(data);

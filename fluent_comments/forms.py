@@ -1,7 +1,7 @@
 from django.contrib.comments import CommentForm
 from django.core.exceptions import ImproperlyConfigured
 from fluent_comments import appsettings
-
+from crispy_forms.helper import FormHelper
 
 if appsettings.USE_THREADEDCOMMENTS:
     from threadedcomments.forms import ThreadedCommentForm as base_class
@@ -15,6 +15,10 @@ class FluentCommentForm(base_class):
     """
     def __init__(self, *args, **kwargs):
         super(FluentCommentForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_class = 'form-horizontal'
+
 
         # Remove fields from the form.
         # This has to be done in the constructor, because the ThreadedCommentForm

@@ -7,6 +7,8 @@
   the 'comments/comment.html template is also used by the Ajax view.
 
 {% endcomment %}
+
+<div class="comment-count comment-count2">{{comment_list|length}} comment{{comment_list|length|pluralize}}</div>
 <div id="comments-{{object.pk}}" class="comments {% if not comment_list %} empty{% endif %}">
   {% for comment in comment_list %}{% include "comments/comment.html" %}{% endfor %}
 </div>

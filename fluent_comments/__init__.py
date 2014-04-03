@@ -1,7 +1,8 @@
 """
 API for :ref:`custom-comment-app-api`
 """
-from django.contrib.comments import Comment
+#from wow.models import CacheComment as Comment
+from django.contrib.comments.models import Comment
 from fluent_comments import appsettings
 from fluent_comments.forms import FluentCommentForm
 
