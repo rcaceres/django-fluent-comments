@@ -56,7 +56,11 @@ class FluentCommentsAdmin(CommentsAdminBase):
     def object_link(self, comment):
         object = comment.content_object
         title = unicode(object)
-        return u'<a href="{0}">{1}</a>'.format(escape(object.get_absolute_url()), escape(title))
+        try:
+            url = object.get_absolute_url()
+        except:
+            url = ''
+        return u'<a href="{0}">{1}</a>'.format(escape(url), escape(title))
 
     object_link.short_description = _("Page")
     object_link.allow_tags = True
